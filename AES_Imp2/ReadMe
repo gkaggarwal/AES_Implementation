@@ -1,0 +1,1 @@
+This AES implementation has single 16 bit input for data as well as key and another 16 bit output port. The loading and unloading is controlled by data loading controller.
