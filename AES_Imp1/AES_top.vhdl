@@ -1,4 +1,4 @@
--- written by Satyadev Ahlawat
+-- written by Gaurav Aggarwal
 -- Date : March 9th, 2020
 -- Version : v.1.0
 
@@ -8,7 +8,7 @@ USE ieee.std_logic_1164.all;
 
 
 ENTITY top_aes IS
-		PORT (clk, rst : IN std_logic;
+		PORT (clk, rst, data_rdy : IN std_logic;
 			  plain_txt,enc_key :IN std_logic_vector(127 downto 0);
 			  done : OUT std_logic;
 			  cipher_out_reg :out std_logic_vector(127 downto 0));
@@ -122,7 +122,7 @@ BEGIN
 
 
 		KE0 : KeyExpansion PORT MAP (clk,encry_rnd,enc_key_in,rnd_key);
-		ERC0 : encry_round_controller PORT MAP (clk,rst,data_rdy,done,encry_rnd);
+		ERC0 : encry_round_controller PORT MAP (clk=>clk,rst=>rst,start=>data_rdy,cipher_text_ready=>done,encry_round=>encry_rnd);
 		PR0 : pre_round PORT MAP (plain_txt,enc_key,pre_rnd_out);
 		SB0 : SBox PORT MAP (sbx_in, sbx_out);
 		SR0 : shiftrows PORT MAP (sbx_out, shftrows_out);
@@ -150,7 +150,7 @@ BEGIN
 		                  r_key_in <= mxcolumn_out;
 		          end if;
 		 END PROCESS;
-		PROCESS (encry_rnd)
+		PROCESS (encry_rnd, pre_rnd_out, round_reg)
 		BEGIN
 		          if encry_rnd="0001" then
 		                  sbx_in <= pre_rnd_out;
@@ -160,7 +160,7 @@ BEGIN
 		 END PROCESS;
 	
 		
-		PROCESS (encry_rnd)
+		PROCESS (encry_rnd, enc_key, rnd_key)
 		BEGIN
 		          if encry_rnd="0001" then
 		                  enc_key_in <= enc_key;
