@@ -47,12 +47,11 @@ BEGIN
 								--		temp0 := round_key(31 downto 0) XOR temp1;
 										
 						--END CASE;
-				if clk'event and clk='1' then 			
 				round_key(127 downto 96) <= temp3;
 				round_key(95 downto 64) <= temp2;
 				round_key(63 downto 32) <= temp1;
 				round_key(31 downto 0) <= temp0;
-				end if;
+			
 		END PROCESS;
 		
 		

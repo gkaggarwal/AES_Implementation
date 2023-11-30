@@ -24,7 +24,7 @@ ARCHITECTURE top_aes_logic OF top_aes IS
 
 ------------->>>>>>>>>> signal and component declaration for KeyExpansion instantiation--------->>>>>>
 
-        SIGNAL  rnd_key : std_logic_vector(127 downto 0);
+        SIGNAL  rnd_key, rnd_key1 : std_logic_vector(127 downto 0);
         
         COMPONENT KeyExpansion IS
         PORT (clk : IN std_logic;
@@ -121,13 +121,13 @@ BEGIN
 		
 
 
-		KE0 : KeyExpansion PORT MAP (clk,encry_rnd,enc_key_in,rnd_key);
+		KE0 : KeyExpansion PORT MAP (clk,encry_rnd,enc_key_in,rnd_key1);
 		ERC0 : encry_round_controller PORT MAP (clk=>clk,rst=>rst,start=>data_rdy,cipher_text_ready=>done,encry_round=>encry_rnd);
 		PR0 : pre_round PORT MAP (plain_txt,enc_key,pre_rnd_out);
 		SB0 : SBox PORT MAP (sbx_in, sbx_out);
 		SR0 : shiftrows PORT MAP (sbx_out, shftrows_out);
 		MC0 : MixColumn PORT MAP (shftrows_out,mxcolumn_out);
-		RKA0 : RoundkeyAddition PORT MAP (r_key_in,rnd_key,rnd_keyadd_out);
+		RKA0 : RoundkeyAddition PORT MAP (r_key_in,rnd_key1,rnd_keyadd_out);
 		
 		
 		
@@ -141,6 +141,14 @@ BEGIN
 		      end if;
 		      round_reg <= rnd_reg;		      
 		 END PROCESS;
+		
+		process(clk, rnd_key1)
+		begin
+		if clk'event and clk='1' then
+		  rnd_key<= rnd_key1;
+		end if;
+		end process;  
+		
 		
 		PROCESS (encry_rnd,clk,mxcolumn_out)
 		BEGIN
