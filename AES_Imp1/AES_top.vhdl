@@ -131,7 +131,7 @@ BEGIN
 		
 		
 		
-		PROCESS(clk,rst)
+		PROCESS(clk,rst, rnd_keyadd_out)
 		VARIABLE rnd_reg : std_logic_vector(127 downto 0);
 		BEGIN
 		      if rst='1' then
@@ -176,8 +176,9 @@ BEGIN
 		PROCESS(clk)
 		BEGIN
 		if encry_rnd="1010" then
+    		if clk'event and clk='1' then
 		         cipher_out_reg <= rnd_keyadd_out;
-		          
+		    end if;      
 		 end if;
 		 END PROCESS;
 		 
